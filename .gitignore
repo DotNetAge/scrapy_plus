@@ -175,6 +175,6 @@ pyvenv.cfg
 .venv
 pip-selfcheck.json
 
-
+build
 .vscode
 .idea
