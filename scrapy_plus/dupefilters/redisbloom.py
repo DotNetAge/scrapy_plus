@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
 import logging
 from scrapy.utils.request import request_fingerprint
-from redis import StrictRedis
+from redis import Redis
 from hashlib import md5
 from scrapy.dupefilters import BaseDupeFilter
+
+BLOOMFILTER_HASH_NUMBER = 6
+BLOOMFILTER_BIT = 30
 
 
 class SimpleHash(object):
@@ -21,14 +24,7 @@ class SimpleHash(object):
 class RedisBloomDupeFilter(BaseDupeFilter):
 
     def __init__(self, host='localhost', port=6379, db=0, blockNum=1, key='bloomfilter'):
-        """
-        :param host: the host of Redis
-        :param port: the port of Redis
-        :param db: witch db in Redis
-        :param blockNum: one blockNum for about 90,000,000; if you have more strings for filtering, increase it.
-        :param key: the key's name in Redis
-        """
-        self.redis = StrictRedis(host=host, port=port, db=db)
+        self.redis = Redis(host=host, port=port, db=db)
 
         self.bit_size = 1 << 31  # Redis的String类型最大容量为512M，现使用256M
         self.seeds = [5, 7, 11, 13, 31, 37, 61]
@@ -44,7 +40,7 @@ class RedisBloomDupeFilter(BaseDupeFilter):
     def from_settings(cls, settings):
         _port = settings.getint('REDIS_PORT', 6379)
         _host = settings.get('REDIS_HOST', '127.0.0.1')
-        _db = settings.get('REDIS_DB', 0)
+        _db = settings.get('REDIS_DUP_DB', 0)
         key = settings.get('BLOOMFILTER_REDIS_KEY', 'bloomfilter')
         block_number = settings.getint(
             'BLOOMFILTER_BLOCK_NUMBER', 1)

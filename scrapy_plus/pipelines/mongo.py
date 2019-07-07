@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 
 import pymongo
-from scrapy import log
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class MongoDBPipeline(object):
@@ -32,5 +34,7 @@ class MongoDBPipeline(object):
 
     def process_item(self, item, spider):
         self.collection.insert(dict(item))
-        log.msg("成功将数据插入至MongoDB", level=log.DEBUG, spider=spider)
+        logger.debug("成功将数据插入至MongoDB",extra={'spider':spider})
+        spider.crawler.stats.inc_value(
+            'mongodb/inserted', spider=spider)
         return item

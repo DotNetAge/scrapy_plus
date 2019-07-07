@@ -10,7 +10,7 @@ with open('README.md', encoding='utf-8') as readme_file:
 
 setup(
     name='scrapy_plus',
-    version='1.0.2',
+    version='1.0.4',
     packages=find_packages(exclude=["tests"]),
     install_requires=REQS,
     url='http://www.github.com/dotnetage/scrapy_plus',

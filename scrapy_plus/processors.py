@@ -15,7 +15,7 @@ from dateparser.date import DateDataParser
 from scrapy.loader.processors import Identity as _Identity
 from scrapy.utils.markup import unquote_markup
 from w3lib.html import remove_tags
-from .parser import SafeHtmlParser
+from .utils.parser import SafeHtmlParser
 
 
 # Regeps from Scrapely_CSS_IMAGERE.pattern
@@ -61,75 +61,14 @@ def extract_image_url(text):
             imgurl = text
     return imgurl
 
-
-class BaseProcessor(object):
-    def __init__(self):
-        super(BaseProcessor, self).__init__()
-
-    def __repr__(self):
-        return '%s(%s)' % (self.__class__.__name__, str(self))
-
-    def __str__(self):
-        argspec = inspect.getargspec(self.__init__)
-        args = argspec.args
-        defaults = argspec.defaults or []
-        joined = reversed(list(izip_longest(reversed(args), reversed(defaults),
-                                            fillvalue=_SENTINEL)))
-        next(joined)  # Skip self
-        values = []
-        skipped = False
-        for attribute, default in joined:
-            value = getattr(self, attribute)
-            if value == default:
-                skipped = True
-                continue
-            if skipped:
-                values.append('{}={}'.format(attribute, repr(value)))
-            else:
-                values.append(repr(value))
-
-        return ', '.join(values)
-
-    def __eq__(self, other):
-        return repr(self) == repr(other)
-
-    def __hash__(self):
-        return hash(str(self))
-
-
-class Field(BaseProcessor):
-    def __init__(self, name, selector, processors=None, required=False,
-                 type='css'):
-        if processors is None:
-            processors = []
-        self.name = name
-        self.selector = selector
-        self.processors = processors
-        self.required = required
-        self.type = type
-
-
-class Item(BaseProcessor):
-    def __init__(self, item, name, selector, fields, type='css'):
-        self.item = item
-        self.name = name
-        self.selector = selector
-        self.fields = fields
-        self.type = type
-
-
-class Identity(BaseProcessor, _Identity):
-    pass
-
-
-class Text(BaseProcessor):
+class Text():
     def __call__(self, values):
         return [remove_tags(v).strip()
                 if v and isinstance(v, six.string_types) else v
                 for v in values]
 
 
-class Number(BaseProcessor):
+class Number():
     def __call__(self, values):
         numbers = []
         for value in values:
@@ -141,7 +80,7 @@ class Number(BaseProcessor):
         return list(chain(*numbers))
 
 
-class Price(BaseProcessor):
+class Price():
     def __call__(self, values):
         prices = []
         for value in values:
@@ -191,6 +130,9 @@ class Url(Text):
             urls.append(urljoin(base, value))
         return urls
 
+class CleanText():
+    def __call__(self, values):
+        return [(lambda v: v.replace('\n', '').replace(' ', '').strip())(v) for v in values]
 
 class Image(Text):
     def __call__(self, values):
@@ -216,7 +158,7 @@ class SafeHtml(Text):
         return results
 
 
-class Regex(BaseProcessor):
+class Regex():
     def __init__(self, regexp):
         if isinstance(regexp, six.string_types):
             regexp = re.compile(regexp)
