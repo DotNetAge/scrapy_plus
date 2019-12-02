@@ -58,7 +58,7 @@ splash==3.3.1
 SQLAlchemy==1.2.18
 stem==1.7.1
 Twisted==18.9.0
-typed-ast==1.3.1
+typed-ast==1.3.2
 tzlocal==1.5.1
 urllib3==1.24.1
 w3lib==1.20.0
