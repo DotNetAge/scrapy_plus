@@ -11,7 +11,7 @@ cffi==1.12.1
 chardet==3.0.4
 constantly==15.1.0
 crcmod==1.7
-cryptography==2.5
+cryptography==3.2
 cssselect==1.0.3
 dateparser==0.7.1
 funcparserlib==0.3.6
