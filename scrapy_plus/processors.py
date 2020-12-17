@@ -2,7 +2,7 @@ import inspect
 import re
 import six
 
-from six.moves.urllib.parse import urljoin, urlparse, urlunparse
+from urllib.parse import urljoin, urlparse, urlunparse
 
 from copy import deepcopy
 from itertools import chain

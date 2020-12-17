@@ -1,6 +1,6 @@
 # coding:utf-8
 import unittest
-from douban.processors import Number, Text, Date, Price
+from scrapy_plus.processors import Number, Text, Date, Price
 
 
 class ProcessorTestCase(unittest.TestCase):
